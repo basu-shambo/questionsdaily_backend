@@ -7,13 +7,16 @@ import dotenv from 'dotenv';
 
 import testRouter from './routes/testRoute.js'
 
-
 const app = express();
 dotenv.config()
 
 app.use(bodyParser.json({limit:"30mb" ,extended: true}));
 app.use(bodyParser.urlencoded({limit:"30mb" ,extended: true}));
 app.use(cors()); 
+
+app.get('/',(req,res)=>{
+    res.send("hello world")
+})
 
 app.use('/test',testRouter)
 
@@ -28,7 +31,7 @@ mongoose.connect(CONNECTION_URL,{useNewUrlParser: true,useUnifiedTopology:true})
         console.log(`server running on ${PORT}`)
     })
 }).catch((err)=>{
-    console.log(error)
+    console.log(err)
 })
 
 mongoose.set('useFindAndModify',false) 
