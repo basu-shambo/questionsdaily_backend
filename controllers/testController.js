@@ -2,11 +2,11 @@
 import questionModel from '../models/questionModel.js'
 import testModel from '../models/testModel.js';
 export const getTest = async(req,res)=>{
+    if(!req._id) return res.json({message:"user not authenticated"});
     try{
         const response = await questionModel.aggregate([{$sample:{size:10}}]);
         const test = response.map((q)=>{
             const {answer,...question}=q
-            // console.log(answer)
             return question
         })
         res.status(200).json(test)

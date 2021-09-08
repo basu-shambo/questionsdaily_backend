@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 
 
 import testRouter from './routes/testRoute.js'
+import authRouter from './routes/authRoute.js'
 
 const app = express();
 dotenv.config()
@@ -18,7 +19,8 @@ app.get('/',(req,res)=>{
     res.send("hello world")
 })
 
-app.use('/test',testRouter)
+app.use('/test',testRouter);
+app.use('/auth',authRouter);
 
 const PORT = process.env.PORT || 5000
 const CONNECTION_URL = process.env.CONNECTION_URL
