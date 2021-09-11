@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 const testSchema = new mongoose.Schema({
+    user:{
+        type:mongoose.ObjectId,
+        required:true
+    },
     numberOfQuestions:{
         type:Number,
         default:10,
@@ -30,6 +34,10 @@ const testSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    date:{
+        type:Date,
+        default:Date.now()
+    }
 
 })
 

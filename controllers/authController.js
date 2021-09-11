@@ -16,22 +16,24 @@ const verifySignUp = (data) =>{
 export const signup = async(req,res)=>{
     const {firstName,lastName,emailId,password} = req.body;
     const {error} = verifySignUp(req.body);
-    if(error) return res.status(400).send({message:error.details[0].message});
+    if(error) return res.status(400).json({error:{ type:"signup",details:error}});
 
     //checking if the email already exists
     try{
         const alreadyUser = await userModel.findOne({emailId});
-        if(alreadyUser) return res.status(400).send({"message":"User alrady Exists"})
+        if(alreadyUser) return res.status(400).json({error:{type:"signup",details:{message:"Email already exist",path:"emailId"}}});
+    
         const salt = await bcrypt.genSalt(12);
         const hashPassword = await bcrypt.hash(password,salt);
         const newUser = new userModel({
             firstName,lastName,emailId,password:hashPassword
         });
         const savedUser = await newUser.save();
-        res.status(200).json({result:savedUser})
+        res.status(200).json({result:savedUser._id})
 
-    }catch(err){
-        res.status(500).json({message:"SignUp Failed"})
+    }catch(error){
+        res.status(500).json({error:{type:"authentication",details:{message:"Unknwown error",path:undefined}}});
+    
     }
     
 }
@@ -49,22 +51,22 @@ const verifyLogin = (data) =>{
 export const login = async (req,res) =>{
     const {emailId,password} = req.body;
     const {error} = verifyLogin(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
+    if(error) return res.status(400).json({error:{ type:"authentication",details:error}});
 
     try{
         //checking if the user exists
         const alreadyUser = await userModel.findOne({emailId});
-        if(!alreadyUser) return res.status(400).send("Invalid email Id or password");
+        if(!alreadyUser) return res.status(400).json({error:{type:"authentication",details:{message:"Email doesn't exist",path:"emailId"}}});
     
         //verifying the password
         const checkPass = await bcrypt.compare(password,alreadyUser.password);
-        if(!checkPass) return res.status(400).send("Invalid emailId or password");
+        if(!checkPass) return res.status(400).json({error:{type:"authentication",details:{message:"Password is wrong",path:"password"}}});
     
         const secret = process.env.TOKEN_SECRET;
         const token = jwt.sign({_id:alreadyUser._id},secret,{expiresIn:"1h"});
         res.status(200).json({result:alreadyUser, token})
     }catch(err){
-        res.status(500).json({"message":"Login Failed"});
+        res.status(500).json({error:{type:"authentication",details:{message:"Something went wrong",path:undefined}}});
     }
     
     
