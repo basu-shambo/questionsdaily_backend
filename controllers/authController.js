@@ -32,7 +32,7 @@ export const signup = async(req,res)=>{
         res.status(200).json({result:savedUser._id})
 
     }catch(error){
-        res.status(500).json({error:{type:"authentication",details:{message:"Unknwown error",path:undefined}}});
+        res.status(500).json({error:{type:"signup",details:{message:"Unknwown error",path:undefined}}});
     
     }
     
